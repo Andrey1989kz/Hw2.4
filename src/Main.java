@@ -16,10 +16,7 @@ public class Main {
             checkSymbolPassword(password);
             checkPassword(password, confirmPassword);
             checkOther(password, login);
-        } catch (WrongLoginException e) {
-            System.out.println(e.getMessage());
-            return false;
-        } catch (WrongPasswordException e) {
+        } catch (WrongLoginException  | WrongPasswordException | NullPointerException e) {
             System.out.println(e.getMessage());
             return false;
         }
@@ -28,14 +25,14 @@ public class Main {
     }
 
     public static boolean checkLongLogin(String login) {
-        if (login.length() <= 20) {
-            return true;
+        if (login.length() >= 20) {
+            throw new WrongLoginException("login больше 20 символов");
         }
-        throw new WrongLoginException("Слишком длинный login");
+        return true;
     }
 
     public static boolean checkSymbolLogin(String login) {
-        if (login.matches("^[a-z\\d_]+$")) {
+        if (login.matches("\\w+")) {
             return true;
         }
         throw new WrongLoginException("Не допустимые символы в login");
@@ -45,29 +42,28 @@ public class Main {
         if (password.length() < 20) {
             return true;
         }
-        throw new WrongPasswordException("Слишком длинный пароль");
+        System.out.println("password должен быть меньше 20 символов");
+        return false;
     }
 
     public static boolean checkSymbolPassword(String password) {
-        if (password.matches("^\\w+$")) {
+        if (password.matches("\\w+")) {
             return true;
         }
-        throw new WrongPasswordException("Введены не допустимые символы password");
+        System.out.println("Введены не допустимые символы password");
+        return false;
     }
 
     public static boolean checkPassword(String password, String confirmPassword) {
-        if (password.length() == confirmPassword.length()) {
+        if (password.equals(confirmPassword)) {
             return true;
         }
         throw new WrongPasswordException("password и confirmPassword не совпадают");
     }
 
     public static boolean checkOther(String password, String login) {
-        if (password == null) {
-            throw new WrongPasswordException("не заполнен password ");
-        }
-        if (login == null) {
-            throw new WrongLoginException("не заполнен login");
+        if (password == null||login == null) {
+            throw new NullPointerException("Заполните все строки");
         }
         return true;
     }
